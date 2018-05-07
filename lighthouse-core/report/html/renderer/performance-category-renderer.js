@@ -86,13 +86,20 @@ class PerformanceCategoryRenderer extends CategoryRenderer {
   }
 
   /**
+   * Get an audit's wastedMs to sort the opportunity by, and scale the sparkline width
+   * Opportunties with an error won't have a summary object, so MIN_VALUE is returned to keep any
+   * erroring opportunities last in sort order.
    * @param {!ReportRenderer.AuditJSON} audit
-   * @return {number|undefined}
+   * @return {number}
    */
   _getWastedMs(audit) {
-    try {
+    if (
+      audit.result.details &&
+      audit.result.details.summary &&
+      typeof audit.result.details.summary.wastedMs === 'number'
+    ) {
       return audit.result.details.summary.wastedMs;
-    } catch (e) {
+    } else {
       return Number.MIN_VALUE;
     }
   }
