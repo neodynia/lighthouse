@@ -31,7 +31,7 @@ class PerformanceCategoryRenderer extends CategoryRenderer {
     if (audit.result.scoreDisplayMode === 'error') {
       descriptionEl.textContent = '';
       valueEl.textContent = 'Error!';
-      const tooltip = this.dom.createChildOf(descriptionEl, 'span', 'lh-error-tooltip-content');
+      const tooltip = this.dom.createChildOf(descriptionEl, 'span');
       tooltip.textContent = audit.result.errorMessage || 'Report error: no metric information';
     }
 
@@ -45,20 +45,10 @@ class PerformanceCategoryRenderer extends CategoryRenderer {
    * @return {!Element}
    */
   _renderOpportunity(audit, index, scale) {
-    const tmpl = this.dom.cloneTemplate('#tmpl-lh-opportunity', this.templateContext);
-    const element = this.dom.find('.lh-load-opportunity', tmpl);
-    element.classList.add(`lh-load-opportunity--${Util.calculateRating(audit.result.score)}`);
+    const oppTmpl = this.dom.cloneTemplate('#tmpl-lh-opportunity', this.templateContext);
+    const element = this.renderAudit(audit, index, oppTmpl);
+    element.classList.add(`lh-audit--${Util.calculateRating(audit.result.score)}`);
     element.id = audit.result.name;
-
-    const titleEl = this.dom.find('.lh-load-opportunity__title', tmpl);
-    titleEl.textContent = audit.result.description;
-    this.dom.find('.lh-audit__index', element).textContent = `${index + 1}`;
-
-    if (audit.result.errorMessage || audit.result.explanation) {
-      const debugStrEl = this.dom.createChildOf(titleEl, 'div', 'lh-debug');
-      debugStrEl.textContent = audit.result.errorMessage || audit.result.explanation;
-    }
-    if (audit.result.scoreDisplayMode === 'error') return element;
 
     const details = audit.result.details;
     const summaryInfo = /** @type {!DetailsRenderer.OpportunitySummary}
@@ -67,21 +57,17 @@ class PerformanceCategoryRenderer extends CategoryRenderer {
       return element;
     }
 
-    const displayValue = Util.formatDisplayValue(audit.result.displayValue);
-    const sparklineWidthPct = `${summaryInfo.wastedMs / scale * 100}%`;
-    const wastedMs = Util.formatSeconds(summaryInfo.wastedMs, 0.01);
-    const auditDescription = this.dom.convertMarkdownLinkSnippets(audit.result.helpText);
-    this.dom.find('.lh-load-opportunity__sparkline', tmpl).title = displayValue;
-    this.dom.find('.lh-load-opportunity__wasted-stat', tmpl).title = displayValue;
-    this.dom.find('.lh-sparkline__bar', tmpl).style.width = sparklineWidthPct;
-    this.dom.find('.lh-load-opportunity__wasted-stat', tmpl).textContent = wastedMs;
-    this.dom.find('.lh-load-opportunity__description', tmpl).appendChild(auditDescription);
+    const wastedEl = this.dom.find('.lh-audit__display-text', element);
+    if (audit.result.scoreDisplayMode !== 'error') {
+      const sparklineWidthPct = `${summaryInfo.wastedMs / scale * 100}%`;
+      this.dom.find('.lh-sparkline__bar', element).style.width = sparklineWidthPct;
+      wastedEl.textContent = Util.formatSeconds(summaryInfo.wastedMs, 0.01);
+    }
 
-    // If there's no `type`, then we only used details for `summary`
-    if (details.type) {
-      const detailsElem = this.detailsRenderer.render(details);
-      detailsElem.classList.add('lh-details');
-      element.appendChild(detailsElem);
+    if (audit.result.displayValue) {
+      const displayValue = Util.formatDisplayValue(audit.result.displayValue);
+      this.dom.find('.lh-load-opportunity__sparkline', element).title = displayValue;
+      wastedEl.title = displayValue;
     }
 
     return element;

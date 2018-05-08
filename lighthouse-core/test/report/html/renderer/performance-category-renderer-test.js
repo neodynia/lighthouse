@@ -86,14 +86,14 @@ describe('PerfCategoryRenderer', () => {
 
     const oppAudits = category.auditRefs.filter(audit => audit.group === 'load-opportunities' &&
         audit.result.score !== 1);
-    const oppElements = categoryDOM.querySelectorAll('.lh-load-opportunity');
+    const oppElements = categoryDOM.querySelectorAll('.lh-audit--load-opportunity');
     assert.equal(oppElements.length, oppAudits.length);
 
     const oppElement = oppElements[0];
     const oppSparklineBarElement = oppElement.querySelector('.lh-sparkline__bar');
     const oppSparklineElement = oppElement.querySelector('.lh-load-opportunity__sparkline');
-    const oppTitleElement = oppElement.querySelector('.lh-load-opportunity__title');
-    const oppWastedElement = oppElement.querySelector('.lh-load-opportunity__wasted-stat');
+    const oppTitleElement = oppElement.querySelector('.lh-audit__title');
+    const oppWastedElement = oppElement.querySelector('.lh-audit__display-text');
     assert.ok(oppTitleElement.textContent, 'did not render title');
     assert.ok(oppSparklineBarElement.style.width, 'did not set sparkline width');
     assert.ok(oppWastedElement.textContent, 'did not render stats');
@@ -106,14 +106,33 @@ describe('PerfCategoryRenderer', () => {
       group: 'load-opportunities',
       result: {
         score: null, scoreDisplayMode: 'error', errorMessage: 'Yikes!!', description: 'Bug #2',
+        details: {summary: {wastedMs: 3223}},
+      },
+    };
+
+    const fakeCategory = Object.assign({}, category, {audits: [auditWithDebug]});
+    const categoryDOM = renderer.render(fakeCategory, sampleResults.reportGroups);
+    const debugEl = categoryDOM.querySelector('.lh-audit--load-opportunity .lh-debug');
+    assert.ok(debugEl, 'did not render debug');
+    assert.ok(/Yikes!!/.test(debugEl.textContent));
+  });
+
+  it('renders errored performance opportunities with a debug string', () => {
+    const auditWithDebug = {
+      score: 0,
+      group: 'load-opportunities',
+      result: {
+        score: 0, scoreDisplayMode: 'numeric',
+        rawValue: 100, explanation: 'Yikes!!', description: 'Bug #2',
       },
     };
 
     const fakeCategory = Object.assign({}, category, {auditRefs: [auditWithDebug]});
     const categoryDOM = renderer.render(fakeCategory, sampleResults.categoryGroups);
 
-    const debugEl = categoryDOM.querySelector('.lh-load-opportunity .lh-debug');
+    const debugEl = categoryDOM.querySelector('.lh-audit--load-opportunity .lh-debug');
     assert.ok(debugEl, 'did not render debug');
+    assert.ok(/Yikes!!/.test(debugEl.textContent));
   });
 
   it('renders the failing diagnostics', () => {
