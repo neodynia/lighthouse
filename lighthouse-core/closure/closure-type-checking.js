@@ -42,7 +42,7 @@ gulp.task('compile-report', () => {
   .pipe(closureCompiler({
     compilation_level: 'SIMPLE',
     // new_type_inf: true,
-    language_in: 'ECMASCRIPT6_STRICT',
+    language_in: 'ECMASCRIPT_NEXT',
     language_out: 'ECMASCRIPT5_STRICT',
     warning_level: 'VERBOSE',
     jscomp_error: [
@@ -51,9 +51,6 @@ gulp.task('compile-report', () => {
       'accessControls',
       'const',
       'visibility',
-
-      // This is *very* strict, so we can move back to a warning if needed.
-      'reportUnknownTypes',
     ],
     jscomp_warning: [
       // https://github.com/google/closure-compiler/wiki/Warnings

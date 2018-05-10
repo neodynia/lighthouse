@@ -253,9 +253,10 @@
       "description": "Keep server response times low (TTFB)",
       "helpText": "Time To First Byte identifies the time at which your server sends a response. [Learn more](https://developers.google.com/web/tools/chrome-devtools/network-performance/issues).",
       "details": {
-        "summary": {
-          "wastedMs": -29.436999999999898
-        }
+        "type": "opportunity",
+        "overallSavingsMs": -29.436999999999898,
+        "headings": [],
+        "items": []
       }
     },
     "first-cpu-idle": {
@@ -788,12 +789,21 @@
       "description": "Preload key requests",
       "helpText": "Consider using <link rel=preload> to prioritize fetching late-discovered resources sooner. [Learn more](https://developers.google.com/web/updates/2016/03/link-rel-preload).",
       "details": {
-        "type": "table",
-        "headings": [],
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "wastedMs",
+            "valueType": "timespanMs",
+            "label": "Potential Savings"
+          }
+        ],
         "items": [],
-        "summary": {
-          "wastedMs": 0
-        }
+        "overallSavingsMs": 0
       }
     },
     "uses-rel-preconnect": {
@@ -808,12 +818,21 @@
       "description": "Avoid multiple, costly round trips to any origin",
       "helpText": "Consider adding preconnect or dns-prefetch resource hints to establish early connections to important third-party origins. [Learn more](https://developers.google.com/web/fundamentals/performance/resource-prioritization#preconnect).",
       "details": {
-        "type": "table",
-        "headings": [],
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "Origin"
+          },
+          {
+            "key": "wastedMs",
+            "valueType": "timespanMs",
+            "label": "Potential Savings"
+          }
+        ],
         "items": [],
-        "summary": {
-          "wastedMs": 0
-        }
+        "overallSavingsMs": 0
       }
     },
     "font-display": {
@@ -1863,13 +1882,32 @@
       "description": "Defer offscreen images",
       "helpText": "Consider lazy-loading offscreen and hidden images after all critical resources have finished loading to lower time to interactive. [Learn more](https://developers.google.com/web/tools/lighthouse/audits/offscreen-images).",
       "details": {
-        "type": "table",
-        "headings": [],
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "thumbnail",
+            "label": ""
+          },
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Original"
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "label": "Potential Savings"
+          }
+        ],
         "items": [],
-        "summary": {
-          "wastedMs": 0,
-          "wastedBytes": 0
-        }
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 0
       }
     },
     "render-blocking-resources": {
@@ -1881,25 +1919,22 @@
       "description": "Eliminate render-blocking resources",
       "helpText": "Resources are blocking the first paint of your page. Consider delivering critical JS/CSS inline and deferring all non-critical JS/styles. [Learn more](https://developers.google.com/web/tools/lighthouse/audits/blocking-resources).",
       "details": {
-        "type": "table",
+        "type": "opportunity",
         "headings": [
           {
             "key": "url",
-            "itemType": "url",
-            "text": "URL"
+            "valueType": "url",
+            "label": "URL"
           },
           {
             "key": "totalBytes",
-            "itemType": "bytes",
-            "displayUnit": "kb",
-            "granularity": 0.01,
-            "text": "Size (KB)"
+            "valueType": "bytes",
+            "label": "Size (KB)"
           },
           {
             "key": "wastedMs",
-            "itemType": "ms",
-            "text": "Download Time (ms)",
-            "granularity": 1
+            "valueType": "timespanMs",
+            "label": "Download Time (ms)"
           }
         ],
         "items": [
@@ -1929,9 +1964,7 @@
             "wastedMs": 723
           }
         ],
-        "summary": {
-          "wastedMs": 1129
-        }
+        "overallSavingsMs": 1129
       }
     },
     "unminified-css": {
@@ -1943,13 +1976,27 @@
       "description": "Minify CSS",
       "helpText": "Minifying CSS files can reduce network payload sizes. [Learn more](https://developers.google.com/speed/docs/insights/MinifyResources).",
       "details": {
-        "type": "table",
-        "headings": [],
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Original"
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "label": "Potential Savings"
+          }
+        ],
         "items": [],
-        "summary": {
-          "wastedMs": 0,
-          "wastedBytes": 0
-        }
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 0
       }
     },
     "unminified-javascript": {
@@ -1965,26 +2012,22 @@
       "description": "Minify JavaScript",
       "helpText": "Minifying JavaScript files can reduce payload sizes and script parse time. [Learn more](https://developers.google.com/speed/docs/insights/MinifyResources).",
       "details": {
-        "type": "table",
+        "type": "opportunity",
         "headings": [
           {
             "key": "url",
-            "itemType": "url",
-            "text": "URL"
+            "valueType": "url",
+            "label": "URL"
           },
           {
             "key": "totalBytes",
-            "itemType": "bytes",
-            "displayUnit": "kb",
-            "granularity": 1,
-            "text": "Original"
+            "valueType": "bytes",
+            "label": "Original"
           },
           {
             "key": "wastedBytes",
-            "itemType": "bytes",
-            "displayUnit": "kb",
-            "granularity": 1,
-            "text": "Potential Savings"
+            "valueType": "bytes",
+            "label": "Potential Savings"
           }
         ],
         "items": [
@@ -1995,10 +2038,8 @@
             "wastedPercent": 42.52388078488413
           }
         ],
-        "summary": {
-          "wastedMs": 0,
-          "wastedBytes": 30470
-        }
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 30470
       }
     },
     "unused-css-rules": {
@@ -2010,13 +2051,27 @@
       "description": "Unused CSS rules",
       "helpText": "Remove unused rules from stylesheets to reduce unnecessary bytes consumed by network activity. [Learn more](https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery).",
       "details": {
-        "type": "table",
-        "headings": [],
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Original"
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "label": "Potential Savings"
+          }
+        ],
         "items": [],
-        "summary": {
-          "wastedMs": 0,
-          "wastedBytes": 0
-        }
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 0
       }
     },
     "uses-webp-images": {
@@ -2032,31 +2087,27 @@
       "description": "Serve images in next-gen formats",
       "helpText": "Image formats like JPEG 2000, JPEG XR, and WebP often provide better compression than PNG or JPEG, which means faster downloads and less data consumption. [Learn more](https://developers.google.com/web/tools/lighthouse/audits/webp).",
       "details": {
-        "type": "table",
+        "type": "opportunity",
         "headings": [
           {
             "key": "url",
-            "itemType": "thumbnail",
-            "text": ""
+            "valueType": "thumbnail",
+            "label": ""
           },
           {
             "key": "url",
-            "itemType": "url",
-            "text": "URL"
+            "valueType": "url",
+            "label": "URL"
           },
           {
             "key": "totalBytes",
-            "itemType": "bytes",
-            "displayUnit": "kb",
-            "granularity": 1,
-            "text": "Original"
+            "valueType": "bytes",
+            "label": "Original"
           },
           {
             "key": "wastedBytes",
-            "itemType": "bytes",
-            "displayUnit": "kb",
-            "granularity": 1,
-            "text": "Potential Savings"
+            "valueType": "bytes",
+            "label": "Potential Savings"
           }
         ],
         "items": [
@@ -2068,10 +2119,8 @@
             "wastedBytes": 8526
           }
         ],
-        "summary": {
-          "wastedMs": 0,
-          "wastedBytes": 8526
-        }
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 8526
       }
     },
     "uses-optimized-images": {
@@ -2084,13 +2133,32 @@
       "description": "Efficiently encode images",
       "helpText": "Optimized images load faster and consume less cellular data. [Learn more](https://developers.google.com/web/tools/lighthouse/audits/optimize-images).",
       "details": {
-        "type": "table",
-        "headings": [],
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "thumbnail",
+            "label": ""
+          },
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Original"
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "label": "Potential Savings"
+          }
+        ],
         "items": [],
-        "summary": {
-          "wastedMs": 0,
-          "wastedBytes": 0
-        }
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 0
       }
     },
     "uses-text-compression": {
@@ -2105,26 +2173,22 @@
       "description": "Enable text compression",
       "helpText": "Text-based responses should be served with compression (gzip, deflate or brotli) to minimize total network bytes. [Learn more](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer).",
       "details": {
-        "type": "table",
+        "type": "opportunity",
         "headings": [
           {
             "key": "url",
-            "itemType": "url",
-            "text": "Uncompressed resource URL"
+            "valueType": "url",
+            "label": "Uncompressed resource URL"
           },
           {
             "key": "totalBytes",
-            "itemType": "bytes",
-            "displayUnit": "kb",
-            "granularity": 1,
-            "text": "Original"
+            "valueType": "bytes",
+            "label": "Original"
           },
           {
             "key": "wastedBytes",
-            "itemType": "bytes",
-            "displayUnit": "kb",
-            "granularity": 1,
-            "text": "GZIP Savings"
+            "valueType": "bytes",
+            "label": "GZIP Savings"
           }
         ],
         "items": [
@@ -2139,10 +2203,8 @@
             "wastedBytes": 8442
           }
         ],
-        "summary": {
-          "wastedMs": 150,
-          "wastedBytes": 64646
-        }
+        "overallSavingsMs": 150,
+        "overallSavingsBytes": 64646
       }
     },
     "uses-responsive-images": {
@@ -2155,13 +2217,32 @@
       "description": "Properly size images",
       "helpText": "Serve images that are appropriately-sized to save cellular data and improve load time. [Learn more](https://developers.google.com/web/tools/lighthouse/audits/oversized-images).",
       "details": {
-        "type": "table",
-        "headings": [],
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "thumbnail",
+            "label": ""
+          },
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Original"
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "label": "Potential Savings"
+          }
+        ],
         "items": [],
-        "summary": {
-          "wastedMs": 0,
-          "wastedBytes": 0
-        }
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 0
       }
     },
     "efficient-animated-content": {
@@ -2173,13 +2254,27 @@
       "description": "Use video formats for animated content",
       "helpText": "Large GIFs are inefficient for delivering animated content. Consider using MPEG4/WebM videos for animations and PNG/WebP for static images instead of GIF to save network bytes. [Learn more](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/replace-animated-gifs-with-video/)",
       "details": {
-        "type": "table",
-        "headings": [],
+        "type": "opportunity",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Transfer Size"
+          },
+          {
+            "key": "wastedBytes",
+            "valueType": "bytes",
+            "label": "Byte Savings"
+          }
+        ],
         "items": [],
-        "summary": {
-          "wastedMs": 0,
-          "wastedBytes": 0
-        }
+        "overallSavingsMs": 0,
+        "overallSavingsBytes": 0
       }
     },
     "appcache-manifest": {

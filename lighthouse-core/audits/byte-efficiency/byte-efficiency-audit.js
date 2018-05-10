@@ -104,7 +104,7 @@ class UnusedBytes extends Audit {
    * - end time of the last long task in the provided graph
    * - (if includeLoad is true or not provided) end time of the last node in the graph
    *
-   * @param {Array<LH.Audit.ByteEfficiencyResult>} results The array of byte savings results per resource
+   * @param {Array<LH.Audit.ByteEfficiencyItem>} results The array of byte savings results per resource
    * @param {Node} graph
    * @param {Simulator} simulator
    * @param {{includeLoad?: boolean}=} options
@@ -114,7 +114,7 @@ class UnusedBytes extends Audit {
     options = Object.assign({includeLoad: true}, options);
 
     const simulationBeforeChanges = simulator.simulate(graph);
-    /** @type {Map<LH.Audit.ByteEfficiencyResult['url'], LH.Audit.ByteEfficiencyResult>} */
+    /** @type {Map<LH.Audit.ByteEfficiencyItem['url'], LH.Audit.ByteEfficiencyItem>} */
     const resultsByUrl = new Map();
     for (const result of results) {
       resultsByUrl.set(result.url, result);
@@ -165,7 +165,7 @@ class UnusedBytes extends Audit {
    * @return {LH.Audit.Product}
    */
   static createAuditProduct(result, graph, simulator) {
-    const results = result.results.sort((itemA, itemB) => itemB.wastedBytes - itemA.wastedBytes);
+    const results = result.items.sort((itemA, itemB) => itemB.wastedBytes - itemA.wastedBytes);
 
     const wastedBytes = results.reduce((sum, item) => sum + item.wastedBytes, 0);
     const wastedKb = Math.round(wastedBytes / KB_IN_BYTES);
@@ -177,13 +177,7 @@ class UnusedBytes extends Audit {
       displayValue = ['Potential savings of %d\xa0KB', wastedKb];
     }
 
-    const summary = {
-      wastedMs,
-      wastedBytes,
-    };
-
-    // @ts-ignore - TODO(bckenny): unify details types. items shouldn't be an indexed type.
-    const details = Audit.makeTableDetails(result.headings, results, summary);
+    const details = Audit.makeOpportunityDetails(result.headings, results, wastedMs, wastedBytes);
 
     return {
       explanation: result.explanation,

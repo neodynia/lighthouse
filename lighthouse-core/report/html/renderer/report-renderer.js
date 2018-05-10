@@ -203,7 +203,7 @@ if (typeof module !== 'undefined' && module.exports) {
  *     scoreDisplayMode: string,
  *     error: boolean,
  *     score: (number|null),
- *     details: (!DetailsRenderer.DetailsJSON|undefined),
+ *     details: (!DetailsRenderer.DetailsJSON|!DetailsRenderer.OpportunityDetails|undefined),
  * }}
  */
 ReportRenderer.AuditResultJSON; // eslint-disable-line no-unused-expressions

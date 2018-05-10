@@ -7,6 +7,9 @@
 
 /* globals self CriticalRequestChainRenderer Util URL */
 
+/** @type {Array<string>} */
+const URL_PREFIXES = ['http://', 'https://', 'data:'];
+
 class DetailsRenderer {
   /**
    * @param {!DOM} dom
@@ -55,6 +58,9 @@ class DetailsRenderer {
       case 'criticalrequestchain':
         return CriticalRequestChainRenderer.render(this._dom, this._templateContext,
           /** @type {!CriticalRequestChainRenderer.CRCDetailsJSON} */ (details));
+      case 'opportunity':
+        // eslint-disable-next-line max-len
+        return this._renderOpportunityTable(/** @type {!DetailsRenderer.OpportunityDetails} */(details));
       default: {
         throw new Error(`Unknown type: ${details.type}`);
       }
@@ -62,7 +68,7 @@ class DetailsRenderer {
   }
 
   /**
-   * @param {!DetailsRenderer.NumericUnitDetailsJSON} details
+   * @param {{value: number, granularity: (number|undefined)}} details
    * @return {!Element}
    */
   _renderBytes(details) {
@@ -72,7 +78,7 @@ class DetailsRenderer {
   }
 
   /**
-   * @param {!DetailsRenderer.NumericUnitDetailsJSON} details
+   * @param {{value: number, granularity: (number|undefined), displayUnit: (string|undefined)}} details
    * @return {!Element}
    */
   _renderMilliseconds(details) {
@@ -85,7 +91,7 @@ class DetailsRenderer {
   }
 
   /**
-   * @param {!DetailsRenderer.StringDetailsJSON} text
+   * @param {{value: string}} text
    * @return {!Element}
    */
   _renderTextURL(text) {
@@ -150,7 +156,7 @@ class DetailsRenderer {
   }
 
   /**
-   * @param {!DetailsRenderer.StringDetailsJSON} text
+   * @param {{value: string}} text
    * @return {!Element}
    */
   _renderText(text) {
@@ -162,7 +168,7 @@ class DetailsRenderer {
   /**
    * Create small thumbnail with scaled down image asset.
    * If the supplied details doesn't have an image/* mimeType, then an empty span is returned.
-   * @param {!DetailsRenderer.ThumbnailDetails} details
+   * @param {{value: (string|undefined)}} details
    * @return {!Element}
    */
   _renderThumbnail(details) {
@@ -226,6 +232,77 @@ class DetailsRenderer {
   }
 
   /**
+   * @param {!DetailsRenderer.OpportunityDetails} details
+   * @return {!Element}
+   */
+  _renderOpportunityTable(details) {
+    if (!details.items.length) return this._dom.createElement('span');
+
+    const tableElem = this._dom.createElement('table', 'lh-table');
+    const theadElem = this._dom.createChildOf(tableElem, 'thead');
+    const theadTrElem = this._dom.createChildOf(theadElem, 'tr');
+
+    for (const heading of details.headings) {
+      const valueType = heading.valueType || 'text';
+      const classes = `lh-table-column--${valueType}`;
+      const labelEl = this._dom.createElement('div', 'lh-text');
+      labelEl.textContent = heading.label;
+      this._dom.createChildOf(theadTrElem, 'th', classes).appendChild(labelEl);
+    }
+
+    const tbodyElem = this._dom.createChildOf(tableElem, 'tbody');
+    for (const row of details.items) {
+      const rowElem = this._dom.createChildOf(tbodyElem, 'tr');
+      for (const heading of details.headings) {
+        const value = row[heading.key];
+
+        if (typeof value === 'undefined' || value === null) {
+          this._dom.createChildOf(rowElem, 'td', 'lh-table-column--empty');
+          continue;
+        }
+
+        const valueType = heading.valueType;
+        let itemElement;
+
+        switch (valueType) {
+          case 'url': {
+            const strValue = /** @type {string} */ (value);
+            if (URL_PREFIXES.some(prefix => strValue.startsWith(prefix))) {
+              itemElement = this._renderTextURL({value: strValue});
+            } else {
+              const codeValue = /** @type {(number|string|undefined)} */ (value);
+              itemElement = this._renderCode({value: codeValue});
+            }
+            break;
+          }
+          case 'timespanMs': {
+            const numValue = /** @type {number} */ (value);
+            itemElement = this._renderMilliseconds({value: numValue});
+            break;
+          }
+          case 'bytes': {
+            const numValue = /** @type {number} */ (value);
+            itemElement = this._renderBytes({value: numValue});
+            break;
+          }
+          case 'thumbnail': {
+            const strValue = /** @type {string} */ (value);
+            itemElement = this._renderThumbnail({value: strValue});
+            break;
+          }
+          default: {
+            throw new Error(`Unknown valueType: ${valueType}`);
+          }
+        }
+
+        const classes = `lh-table-column--${valueType}`;
+        this._dom.createChildOf(rowElem, 'td', classes).appendChild(itemElement);
+      }
+    }
+    return tableElem;
+  }
+
+  /**
    * @param {!DetailsRenderer.NodeDetailsJSON} item
    * @return {!Element}
    * @protected
@@ -258,7 +335,7 @@ class DetailsRenderer {
   }
 
   /**
-   * @param {!DetailsRenderer.DetailsJSON} details
+   * @param {{value: (string|number|undefined)}} details
    * @return {!Element}
    */
   _renderCode(details) {
@@ -279,7 +356,6 @@ if (typeof module !== 'undefined' && module.exports) {
  * @typedef {{
  *     type: string,
  *     value: (string|number|undefined),
- *     summary: (DetailsRenderer.OpportunitySummary|undefined),
  *     granularity: (number|undefined),
  *     displayUnit: (string|undefined)
  * }}
@@ -359,10 +435,12 @@ DetailsRenderer.LinkDetailsJSON; // eslint-disable-line no-unused-expressions
  */
 DetailsRenderer.FilmstripDetails; // eslint-disable-line no-unused-expressions
 
-
 /** @typedef {{
- *     wastedMs: (number|undefined),
- *     wastedBytes: (number|undefined),
+ *     type: string,
+ *     overallSavingsMs: number,
+ *     overallSavingsBytes: (number|undefined),
+ *     headings: !Array<{key: string, label: string, valueType: string}>,
+ *     items: !Array<Object<string, (string|boolean|number)>>,
  * }}
  */
-DetailsRenderer.OpportunitySummary; // eslint-disable-line no-unused-expressions
+DetailsRenderer.OpportunityDetails; // eslint-disable-line no-unused-expressions

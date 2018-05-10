@@ -94,17 +94,17 @@ class UnminifiedCSS extends ByteEfficiencyAudit {
    * @param {LH.Artifacts.CSSStyleSheetInfo} stylesheet
    * @param {LH.WebInspector.NetworkRequest=} networkRecord
    * @param {string} pageUrl
-   * @return {{url: string|LH.Audit.DetailsRendererCodeDetailJSON, totalBytes: number, wastedBytes: number, wastedPercent: number}}
+   * @return {{url: string, totalBytes: number, wastedBytes: number, wastedPercent: number}}
    */
   static computeWaste(stylesheet, networkRecord, pageUrl) {
     const content = stylesheet.content;
     const totalTokenLength = UnminifiedCSS.computeTokenLength(content);
 
-    /** @type {LH.Audit.ByteEfficiencyResult['url']} */
+    /** @type {LH.Audit.ByteEfficiencyItem['url']} */
     let url = stylesheet.header.sourceURL;
     if (!url || url === pageUrl) {
       const contentPreview = UnusedCSSRules.determineContentPreview(stylesheet.content);
-      url = {type: 'code', value: contentPreview};
+      url = contentPreview;
     }
 
     const totalBytes = ByteEfficiencyAudit.estimateTransferSize(networkRecord, content.length,
@@ -127,7 +127,7 @@ class UnminifiedCSS extends ByteEfficiencyAudit {
    */
   static audit_(artifacts, networkRecords) {
     const pageUrl = artifacts.URL.finalUrl;
-    const results = [];
+    const items = [];
     for (const stylesheet of artifacts.CSSUsage.stylesheets) {
       const networkRecord = networkRecords
         .find(record => record.url === stylesheet.header.sourceURL);
@@ -140,16 +140,15 @@ class UnminifiedCSS extends ByteEfficiencyAudit {
       if (result.wastedPercent < IGNORE_THRESHOLD_IN_PERCENT ||
           result.wastedBytes < IGNORE_THRESHOLD_IN_BYTES ||
           !Number.isFinite(result.wastedBytes)) continue;
-      results.push(result);
+      items.push(result);
     }
 
     return {
-      results,
+      items,
       headings: [
-        {key: 'url', itemType: 'url', text: 'URL'},
-        {key: 'totalBytes', itemType: 'bytes', displayUnit: 'kb', granularity: 1, text: 'Original'},
-        {key: 'wastedBytes', itemType: 'bytes', displayUnit: 'kb', granularity: 1,
-          text: 'Potential Savings'},
+        {key: 'url', valueType: 'url', label: 'URL'},
+        {key: 'totalBytes', valueType: 'bytes', label: 'Original'},
+        {key: 'wastedBytes', valueType: 'bytes', label: 'Potential Savings'},
       ],
     };
   }
