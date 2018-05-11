@@ -39,10 +39,8 @@ class Util {
     if (typeof displayValue === 'string') return displayValue;
     if (!displayValue) return '';
 
-    // Don't mutate the value
-    displayValue = [...displayValue];
     const replacementRegex = /%([0-9]*(\.[0-9]+)?d|s)/;
-    const template = /** @type {string} */ (displayValue.shift());
+    const template = /** @type {string} */ (displayValue[0]);
     if (typeof template !== 'string') {
       // First value should always be the format string, but we don't want to fail to build
       // a report, return a placeholder.
@@ -50,7 +48,7 @@ class Util {
     }
 
     let output = template;
-    for (const replacement of displayValue) {
+    for (const replacement of displayValue.slice(1)) {
       if (!replacementRegex.test(output)) {
         // eslint-disable-next-line no-console
         console.warn('Too many replacements given');

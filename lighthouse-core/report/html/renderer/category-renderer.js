@@ -26,11 +26,20 @@ class CategoryRenderer {
   /**
    * @param {!ReportRenderer.AuditJSON} audit
    * @param {number} index
-   * @param {DocumentFragment=} providedTmpl
    * @return {!Element}
    */
-  renderAudit(audit, index, providedTmpl) {
-    const tmpl = providedTmpl || this.dom.cloneTemplate('#tmpl-lh-audit', this.templateContext);
+  renderAudit(audit, index) {
+    const tmpl = this.dom.cloneTemplate('#tmpl-lh-audit', this.templateContext);
+    return this.populateAuditValues(audit, index, tmpl);
+  }
+
+  /**
+   * @param {!ReportRenderer.AuditJSON} audit
+   * @param {number} index
+   * @param {!DocumentFragment} tmpl
+   * @return {!Element}
+   */
+  populateAuditValues(audit, index, tmpl) {
     const auditEl = this.dom.find('.lh-audit', tmpl);
     auditEl.id = audit.result.name;
     const displayTextEl = this.dom.find('.lh-audit__display-text', auditEl);
