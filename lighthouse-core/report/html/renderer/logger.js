@@ -10,13 +10,12 @@
  */
 class Logger {
   /**
-   * @param {!Element} element
+   * @param {Element} element
    */
   constructor(element) {
-    /** @type {!Element} */
+    /** @type {Element} */
     this.el = element;
-    /** @private {?number} */
-    this._id = null;
+    this._id = undefined;
   }
 
   /**
@@ -26,7 +25,7 @@ class Logger {
    *     Default is true.
    */
   log(msg, autoHide = true) {
-    clearTimeout(this._id);
+    this._id && clearTimeout(this._id);
 
     this.el.textContent = msg;
     this.el.classList.add('show');
@@ -55,7 +54,7 @@ class Logger {
    * Explicitly hides the butter bar.
    */
   hide() {
-    clearTimeout(this._id);
+    this._id && clearTimeout(this._id);
     this.el.classList.remove('show');
   }
 }
