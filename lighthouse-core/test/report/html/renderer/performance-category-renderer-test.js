@@ -110,14 +110,14 @@ describe('PerfCategoryRenderer', () => {
       },
     };
 
-    const fakeCategory = Object.assign({}, category, {audits: [auditWithDebug]});
-    const categoryDOM = renderer.render(fakeCategory, sampleResults.reportGroups);
+    const fakeCategory = Object.assign({}, category, {auditRefs: [auditWithDebug]});
+    const categoryDOM = renderer.render(fakeCategory, sampleResults.categoryGroups);
     const debugEl = categoryDOM.querySelector('.lh-audit--load-opportunity .lh-debug');
     assert.ok(debugEl, 'did not render debug');
     assert.ok(/Yikes!!/.test(debugEl.textContent));
   });
 
-  it('renders errored performance opportunities with a debug string', () => {
+  it('renders performance opportunities\' explanation', () => {
     const auditWithDebug = {
       score: 0,
       group: 'load-opportunities',
